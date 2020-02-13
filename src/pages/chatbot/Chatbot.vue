@@ -1,11 +1,11 @@
 <template>
   <div>
     <div class="chat">
-        <header>Chatbot</header>
+        <header>Chatbot - <b-nav-item to="/">Volta para home</b-nav-item></header>
         <main>
             <section>
-                <div class="message" v-for="m in messages"  v-bind:key="m.me" :class="{ me: m.me }" v-html="$options.filters.messageFormat(m.text)"></div>
-                <img src="https://loading.io/spinners/message/lg.messenger-typing-preloader.gif" v-if="loading" style="width: 50px"/>
+                <div class="message" v-for="m in messages"  v-bind:key="m.id" :class="{ me: m.me }" v-html="$options.filters.messageFormat(m.text)"></div>
+                <img src="../../assets/35.gif" v-if="loading" style="width: 50px"/>
                 <textarea :disabled="loading" placeholder="Envie uma mensagem..." @keypress.enter.prevent="sendMessage" v-model="message"></textarea>
             </section>
         </main>
@@ -22,26 +22,33 @@ export default {
             context: {},
             messages: [],
             message: null,
-            loading: false
+            loading: false,
+            id: `${Date.now()}`,
+            user_id: this.$store.getters.getUsuario.id
         }
     },
     methods: {
+        returnId() {
+            return `${Date.now()}`
+        },
         sendMessage() {
             if(this.message != null) {
                 this.messages.push({
+                    id: this.returnId(),
                     me: true,
                     text: this.message
                 })
             }
             const data = {
                 message: this.message,
-                context: this.context
+                context: this.context,
+                user_id: this.user_id
             }
             this.message = '';
             this.loading = true;
-            console.log(this.$store.getters.getToken)
             this.axios.post('api/dialog', data, {"headers": {"authorization":"Bearer " + this.$store.getters.getToken}}).then((response) => {
                 this.messages.push({
+                    id: this.returnId(),
                     me: false,
                     text: response.data.response.result.output.text
                 })

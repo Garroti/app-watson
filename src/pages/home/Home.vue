@@ -16,14 +16,14 @@
         <b-navbar-nav class="ml-auto">
             <b-nav-form>
             <b-form-input size="sm" class="mr-sm-2" v-model="filter" placeholder="Pesquiser ticket"></b-form-input>
-            <b-button size="sm" @click="filterTickets"  class="my-2 my-sm-0">Pesquisar</b-button>
+            <b-button size="sm" @click="filterTickets" class="my-2 my-sm-0">Pesquisar</b-button>
             </b-nav-form>
 
             <b-nav-item-dropdown right>
                 <template v-slot:button-content>
                     <em>{{ name }}</em>
                 </template>
-                <b-dropdown-item href="#">Sair</b-dropdown-item>
+                <b-dropdown-item @click="logout">Sair</b-dropdown-item>
             </b-nav-item-dropdown>
         </b-navbar-nav>
         </b-collapse>
@@ -69,6 +69,17 @@ export default {
       this.axios.get(`api/tickets/${this.userid}/${this.filter}`, {"headers": {"authorization":"Bearer " + this.$store.getters.getToken}}).then((response) => {
         this.tickets = response.data
       })
+    },
+    logout() {
+      sessionStorage.clear();
+      this.$router.push('/login');
+    }
+  },
+  watch: {
+    filter: function() {
+      if (this.filter == '') {
+        this.allTickets()
+      }
     }
   },
   mounted() {

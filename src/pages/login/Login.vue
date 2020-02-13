@@ -27,7 +27,6 @@ export default {
         password: this.password
       })
       .then(res => {
-        console.log(res.data)
         if(res.data.token){
           this.$store.commit('setUsuario', res.data)
           sessionStorage.setItem('usuario', JSON.stringify(res.data));
